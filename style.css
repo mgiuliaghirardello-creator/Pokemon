@@ -1,0 +1,368 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #e9e9e9;
+
+    padding: 20px;
+}
+
+
+
+.pokedex {
+    width: 100%;
+    max-width: 430px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+
+h1 {
+    text-align: center;
+
+    font-size: 32px;
+
+    margin-bottom: 20px;
+
+    color: #222;
+}
+
+
+
+.pesquisa {
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+}
+
+.pesquisa input {
+    flex: 1;
+
+    padding: 12px;
+
+    border: 2px solid #ddd;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+.pesquisa input:focus {
+    border-color: #333;
+}
+
+.pesquisa button {
+    padding: 12px 18px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #222;
+
+    color: white;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.pesquisa button:hover {
+    background: #444;
+}
+
+
+
+#mensagem {
+    text-align: center;
+
+    color: #d62828;
+
+    font-weight: bold;
+
+    min-height: 20px;
+
+    margin-bottom: 10px;
+}
+
+
+
+.card {
+    border: 2px solid #ddd;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    background: #fafafa;
+}
+
+
+
+.cabecalho {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+}
+
+.cabecalho h2 {
+    text-transform: capitalize;
+
+    font-size: 26px;
+}
+
+#numero {
+    font-weight: bold;
+
+    color: #777;
+}
+
+
+
+.imagem-container {
+    height: 220px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+}
+
+.imagem-container img {
+    width: 200px;
+
+    height: 200px;
+
+    object-fit: contain;
+
+    image-rendering: auto;
+}
+
+
+
+.informacoes {
+    margin-top: 10px;
+
+    margin-bottom: 20px;
+}
+
+.linha {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin: 9px 0;
+
+    font-size: 16px;
+}
+
+.linha strong {
+    min-width: 65px;
+}
+
+
+
+#tipos {
+    display: flex;
+
+    gap: 6px;
+
+    flex-wrap: wrap;
+}
+
+.tipo {
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    text-transform: capitalize;
+}
+
+
+
+.normal {
+    background: #999;
+}
+
+.fire {
+    background: #f08030;
+}
+
+.water {
+    background: #6890f0;
+}
+
+.electric {
+    background: #f8d030;
+    color: #222;
+}
+
+.grass {
+    background: #78c850;
+}
+
+.ice {
+    background: #98d8d8;
+    color: #222;
+}
+
+.fighting {
+    background: #c03028;
+}
+
+.poison {
+    background: #a040a0;
+}
+
+.ground {
+    background: #e0c068;
+    color: #222;
+}
+
+.flying {
+    background: #a890f0;
+}
+
+.psychic {
+    background: #f85888;
+}
+
+.bug {
+    background: #a8b820;
+}
+
+.rock {
+    background: #b8a038;
+}
+
+.ghost {
+    background: #705898;
+}
+
+.dragon {
+    background: #7038f8;
+}
+
+.dark {
+    background: #705848;
+}
+
+.steel {
+    background: #b8b8d0;
+    color: #222;
+}
+
+.fairy {
+    background: #ee99ac;
+}
+
+
+
+.status {
+    margin-top: 10px;
+}
+
+.status-item {
+    margin-bottom: 12px;
+}
+
+.status-topo {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 5px;
+
+    font-size: 14px;
+
+    font-weight: bold;
+}
+
+
+
+.barra {
+    width: 100%;
+
+    height: 12px;
+
+    background: #ddd;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.barra-preenchida {
+    height: 100%;
+
+    width: 0%;
+
+    background: #222;
+
+    border-radius: 10px;
+
+    transition: width 0.5s ease;
+}
+
+
+
+@media (max-width: 500px) {
+
+    .pokedex {
+        padding: 18px;
+    }
+
+    .pesquisa {
+        flex-direction: column;
+    }
+
+    .pesquisa button {
+        width: 100%;
+    }
+
+    .imagem-container {
+        height: 190px;
+    }
+
+    .imagem-container img {
+        width: 170px;
+        height: 170px;
+    }
+}

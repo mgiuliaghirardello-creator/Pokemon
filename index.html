@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pokédex</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="pokedex">
+
+        <h1>Pokédex</h1>
+
+        <div class="pesquisa">
+
+            <input
+                type="text"
+                id="pokemon"
+                placeholder="Digite o nome ou número"
+                autocomplete="off"
+            >
+
+            <button id="buscar">
+                Buscar
+            </button>
+
+        </div>
+
+        <p id="mensagem"></p>
+
+        <section class="card">
+
+            <div class="cabecalho">
+
+                <h2 id="nome">
+                    Pikachu
+                </h2>
+
+                <span id="numero">
+                    #025
+                </span>
+
+            </div>
+
+            <div class="imagem-container">
+
+                <img
+                    id="imagem"
+                    src="pikachu.jpg";
+                    alt="Pikachu"
+                >
+
+            </div>
+
+            <!-- Tipo -->
+            <div class="informacoes">
+
+                <div class="linha">
+                    <strong>Tipo:</strong>
+
+                    <div id="tipos">
+                        <span class="tipo eletrico">
+                            Elétrico
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Altura -->
+                <div class="linha">
+                    <strong>Altura:</strong>
+                    <span id="altura">0.4 m</span>
+                </div>
+
+                <!-- Peso -->
+                <div class="linha">
+                    <strong>Peso:</strong>
+                    <span id="peso">6.0 kg</span>
+                </div>
+
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="status">
+
+                <!-- HP -->
+                <div class="status-item">
+
+                    <div class="status-topo">
+                        <span>HP</span>
+                        <span id="hp-valor">35</span>
+                    </div>
+
+                    <div class="barra">
+                        <div
+                            id="hp-barra"
+                            class="barra-preenchida"
+                        ></div>
+                    </div>
+
+                </div>
+
+                <!-- Ataque -->
+                <div class="status-item">
+
+                    <div class="status-topo">
+                        <span>Ataque</span>
+                        <span id="ataque-valor">55</span>
+                    </div>
+
+                    <div class="barra">
+                        <div
+                            id="ataque-barra"
+                            class="barra-preenchida"
+                        ></div>
+                    </div>
+
+                </div>
+
+                <!-- Defesa -->
+                <div class="status-item">
+
+                    <div class="status-topo">
+                        <span>Defesa</span>
+                        <span id="defesa-valor">40</span>
+                    </div>
+
+                    <div class="barra">
+                        <div
+                            id="defesa-barra"
+                            class="barra-preenchida"
+                        ></div>
+                    </div>
+
+                </div>
+
+                <!-- Velocidade -->
+                <div class="status-item">
+
+                    <div class="status-topo">
+                        <span>Velocidade</span>
+                        <span id="velocidade-valor">90</span>
+                    </div>
+
+                    <div class="barra">
+                        <div
+                            id="velocidade-barra"
+                            class="barra-preenchida"
+                        ></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
