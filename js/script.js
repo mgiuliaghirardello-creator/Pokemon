@@ -1,226 +1,85 @@
-const inputPokemon = document.getElementById("pokemon");
-const botaoBuscar = document.getElementById("buscar");
+const campo = document.getElementById("pokemon");
+const resultados = document.getElementById("resultados");
+const erro = document.getElementById("erro");
 
-const mensagem = document.getElementById("mensagem");
-
-const nome = document.getElementById("nome");
-const numero = document.getElementById("numero");
-
-const imagem = document.getElementById("imagem");
-
-const tipos = document.getElementById("tipos");
-
-const altura = document.getElementById("altura");
-const peso = document.getElementById("peso");
-
-
-const hpValor = document.getElementById("hp-valor");
-const ataqueValor = document.getElementById("ataque-valor");
-const defesaValor = document.getElementById("defesa-valor");
-const velocidadeValor = document.getElementById("velocidade-valor");
-
-const hpBarra = document.getElementById("hp-barra");
-const ataqueBarra = document.getElementById("ataque-barra");
-const defesaBarra = document.getElementById("defesa-barra");
-const velocidadeBarra = document.getElementById("velocidade-barra");
-
-
-const nomesTipos = {
-    normal: "Normal",
-    fire: "Fogo",
-    water: "Água",
-    electric: "Elétrico",
-    grass: "Planta",
-    ice: "Gelo",
-    fighting: "Lutador",
-    poison: "Veneno",
-    ground: "Terrestre",
-    flying: "Voador",
-    psychic: "Psíquico",
-    bug: "Inseto",
-    rock: "Pedra",
-    ghost: "Fantasma",
-    dragon: "Dragão",
-    dark: "Sombrio",
-    steel: "Aço",
-    fairy: "Fada"
-};
-
+const STATUS = [
+  { chave: "hp",              nome: "HP",         cor: "#dc3545" },
+  { chave: "attack",          nome: "Ataque",     cor: "#ffc107" },
+  { chave: "defense",         nome: "Defesa",     cor: "#0dcaf0" },
+  { chave: "speed",           nome: "Velocidade", cor: "#198754" }
+];
 
 async function buscarPokemon() {
+  erro.textContent = "";
+  // permite vários Pokémon separados por vírgula ou espaço
+  const nomes = campo.value.toLowerCase().split(/[,\s]+/).filter(Boolean);
+  if (nomes.length === 0) return;
 
-    const pesquisa = inputPokemon.value
-        .trim()
-        .toLowerCase();
+  const naoEncontrados = [];
 
-    if (pesquisa === "") {
-
-        mensagem.textContent =
-            "Digite o nome ou número de um Pokémon.";
-
-        return;
-    }
-
-    mensagem.textContent = "Carregando...";
-
+  for (const nome of nomes) {
     try {
-
-        const resposta = await fetch(
-            `https://pokeapi.co/api/v2/pokemon/${pesquisa}`
-        );
-
-        if (!resposta.ok) {
-            throw new Error("Pokémon não encontrado");
-        }
-
-        const pokemon = await resposta.json();
-
-        mostrarPokemon(pokemon);
-
-        mensagem.textContent = "";
-
-    } catch (erro) {
-
-        mensagem.textContent =
-            "Pokémon não encontrado.";
-
+      const resposta = await fetch(`https://pokeapi.co/api/v2/pokemon/${nome}`);
+      if (!resposta.ok) throw new Error("não encontrado");
+      const pokemon = await resposta.json();
+      mostrarPokemon(pokemon);
+    } catch (e) {
+      naoEncontrados.push(nome);
     }
+  }
+
+  if (naoEncontrados.length) {
+    erro.textContent = "Não encontrado: " + naoEncontrados.join(", ");
+  }
 }
 
+function mostrarPokemon(p) {
+  const nome = p.name.charAt(0).toUpperCase() + p.name.slice(1);
+  const imagem = p.sprites.other["official-artwork"].front_default || p.sprites.front_default;
 
-function mostrarPokemon(pokemon) {
+  const tipos = p.types
+    .map(t => `<span class="badge tipo tipo-${t.type.name}">${t.type.name}</span>`).join("");
 
-    nome.textContent = pokemon.name;
+  const habilidades = p.abilities
+    .map(a => `<span class="badge bg-secondary me-1">${a.ability.name}</span>`).join("");
 
-    numero.textContent =
-        `#${String(pokemon.id).padStart(3, "0")}`;
+  const barras = STATUS.map(s => {
+    const valor = p.stats.find(x => x.stat.name === s.chave).base_stat;
+    const largura = Math.min(valor, 100);
+    return `
+      <div class="mb-2">
+        <div class="stat-label">${s.nome}: ${valor}</div>
+        <div class="progress">
+          <div class="progress-bar" style="width:${largura}%; background:${s.cor}">${valor}</div>
+        </div>
+      </div>`;
+  }).join("");
 
+  const card = document.createElement("div");
+  card.className = "card card-pokemon mb-3 position-relative";
+  card.innerHTML = `
+    <button class="btn-remover" title="Remover">×</button>
+    <div class="card-body text-center">
+      <h3>${nome} <span class="text-secondary">#${p.id}</span></h3>
+      <img class="pokemon-img my-2" src="${imagem}" alt="${nome}">
+      <hr>
+      <h6 class="mt-3">Tipo</h6>
+      <div class="mb-3">${tipos}</div>
+      <div class="row small mb-3">
+        <div class="col"><strong>Altura</strong><br>${p.height / 10} m</div>
+        <div class="col"><strong>Peso</strong><br>${p.weight / 10} kg</div>
+      </div>
+      <h6 class="mt-4 mb-3">Status</h6>
+      <div class="text-start">${barras}</div>
+      <h6 class="mt-4">Habilidades</h6>
+      <div>${habilidades}</div>
+    </div>`;
 
-    imagem.src =
-        pokemon.sprites.other["official-artwork"].front_default
-        || pokemon.sprites.front_default;
-
-    imagem.alt = pokemon.name;
-
-
-    tipos.innerHTML = "";
-
-    pokemon.types.forEach((item) => {
-
-        const tipoOriginal = item.type.name;
-
-        const span = document.createElement("span");
-
-        span.classList.add(
-            "tipo",
-            tipoOriginal
-        );
-
-        span.textContent =
-            nomesTipos[tipoOriginal] || tipoOriginal;
-
-        tipos.appendChild(span);
-
-    });
-
-
-    altura.textContent =
-        `${(pokemon.height / 10).toFixed(1)} m`;
-
-
-    peso.textContent =
-        `${(pokemon.weight / 10).toFixed(1)} kg`;
-
-
-    const hp = encontrarStatus(
-        pokemon.stats,
-        "hp"
-    );
-
-    const ataque = encontrarStatus(
-        pokemon.stats,
-        "attack"
-    );
-
-    const defesa = encontrarStatus(
-        pokemon.stats,
-        "defense"
-    );
-
-    const velocidade = encontrarStatus(
-        pokemon.stats,
-        "speed"
-    );
-
-    hpValor.textContent = hp;
-    ataqueValor.textContent = ataque;
-    defesaValor.textContent = defesa;
-    velocidadeValor.textContent = velocidade;
-
-
-    atualizarBarra(hpBarra, hp);
-    atualizarBarra(ataqueBarra, ataque);
-    atualizarBarra(defesaBarra, defesa);
-    atualizarBarra(velocidadeBarra, velocidade);
+  card.querySelector(".btn-remover").onclick = () => card.remove();
+  resultados.prepend(card);
 }
 
+document.getElementById("btnBuscar").addEventListener("click", buscarPokemon);
+campo.addEventListener("keydown", e => { if (e.key === "Enter") buscarPokemon(); });
 
-function encontrarStatus(stats, nomeStatus) {
-
-    const status = stats.find(
-        (item) => item.stat.name === nomeStatus
-    );
-
-    return status ? status.base_stat : 0;
-}
-
-
-function atualizarBarra(barra, valor) {
-
-    const porcentagem =
-        Math.min((valor / 255) * 100, 100);
-
-    barra.style.width =
-        `${porcentagem}%`;
-}
-
-
-botaoBuscar.addEventListener(
-    "click",
-    buscarPokemon
-);
-
-inputPokemon.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (event.key === "Enter") {
-            buscarPokemon();
-        }
-
-    }
-);
-
-
-buscarPokemonInicial();
-
-
-async function buscarPokemonInicial() {
-
-    try {
-
-        const resposta = await fetch(
-            "https://pokeapi.co/api/v2/pokemon/pikachu&quot"
-        );
-
-        const pokemon = await resposta.json();
-
-        mostrarPokemon(pokemon);
-
-    } catch (erro) {
-
-        mensagem.textContent =
-            "Não foi possível carregar o Pokémon.";
-
-    }
-}
+buscarPokemon(); // carrega o Pikachu ao abrir, como no modelo

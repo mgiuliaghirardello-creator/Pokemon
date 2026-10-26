@@ -1,168 +1,122 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Pokédex</title>
-
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pokédex</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f8f9fa;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#212529;font-size:14px}
+nav{background:#dc3545;color:#fff;padding:10px 0}
+nav span{display:block;max-width:900px;margin:0 auto;padding:0 16px;font-size:15px}
+main{max-width:360px;margin:24px auto;padding:0 8px}
+.card{background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.15);margin-bottom:14px;position:relative}
+.card-body{padding:12px 8px}
+h4{text-align:center;font-weight:400;font-size:21px;margin:4px 0 14px}
+.busca{display:flex}
+.busca input{flex:1;padding:6px 8px;border:1px solid #dee2e6;border-radius:4px 0 0 4px;font-size:12px;min-width:0}
+.busca button{background:#dc3545;color:#fff;border:0;padding:6px 12px;border-radius:0 4px 4px 0;font-size:12px;cursor:pointer}
+.busca button:hover{background:#bb2d3b}
+.busca button:active{transform:scale(.96)}
+#erro{color:#dc3545;font-size:12px;margin-top:6px;min-height:0}
+.res{text-align:center;animation:entrar .4s ease}
+.res h3{font-weight:400;font-size:21px;margin:0}
+.res h3 small{color:#6c757d}
+.res img{width:200px;height:200px;object-fit:contain;margin:8px 0;transition:transform .3s}
+.res img:hover{transform:scale(1.1) rotate(-3deg)}
+hr{border:0;border-top:1px solid #dee2e6;margin:8px 0}
+h6{font-weight:400;font-size:14px;margin:14px 0 6px}
+.row{display:flex;font-size:12px;margin-bottom:10px}
+.row div{flex:1}
+.stats{text-align:left}
+.lbl{font-size:11px;margin-bottom:2px}
+.bar{height:8px;background:#e9ecef;margin-bottom:10px}
+.bar div{height:100%;color:#fff;font-size:7px;line-height:8px;text-align:center;transition:width .6s}
+.badge{display:inline-block;color:#fff;font-weight:600;font-size:9px;padding:3px 6px;border-radius:5px;margin:0 2px}
+.hab{background:#6c757d}
+.x{position:absolute;top:4px;right:10px;border:0;background:none;font-size:20px;color:#999;cursor:pointer}
+.x:hover{color:#dc3545}
+@keyframes entrar{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+.t-normal{background:#a8a77a}.t-fire{background:#ee8130}.t-water{background:#6390f0}
+.t-electric{background:#0d6efd}.t-grass{background:#7ac74c}.t-ice{background:#96d9d6}
+.t-fighting{background:#c22e28}.t-poison{background:#a33ea1}.t-ground{background:#e2bf65}
+.t-flying{background:#a98ff3}.t-psychic{background:#f95587}.t-bug{background:#a6b91a}
+.t-rock{background:#b6a136}.t-ghost{background:#735797}.t-dragon{background:#6f35fc}
+.t-dark{background:#705746}.t-steel{background:#b7b7ce}.t-fairy{background:#d685ad}
+</style>
 </head>
-
 <body>
+<nav><span>🔴 Pokédex</span></nav>
 
-    <main class="pokedex">
+<main>
+  <div class="card"><div class="card-body">
+    <h4>Pesquisar Pokémon</h4>
+    <div class="busca">
+      <input type="text" id="pokemon" value="pikachu" placeholder="Ex.: pikachu, charizard, 150" onkeydown="if(event.key==='Enter')buscarPokemon()">
+      <button type="button" id="btnBuscar" onclick="buscarPokemon()">Buscar</button>
+    </div>
+    <div id="erro"></div>
+  </div></div>
 
-        <h1>Pokédex</h1>
+  <div id="resultados"></div>
+</main>
 
-        <div class="pesquisa">
+<script>
+var STATUS=[
+  {chave:"hp",nome:"HP",cor:"#dc3545"},
+  {chave:"attack",nome:"Ataque",cor:"#ffc107"},
+  {chave:"defense",nome:"Defesa",cor:"#0dcaf0"},
+  {chave:"speed",nome:"Velocidade",cor:"#198754"}
+];
 
-            <input
-                type="text"
-                id="pokemon"
-                placeholder="Digite o nome ou número"
-                autocomplete="off"
-            >
+async function buscarPokemon(){
+  var erro=document.getElementById("erro");
+  var btn=document.getElementById("btnBuscar");
+  erro.textContent="";
+  var nomes=document.getElementById("pokemon").value.toLowerCase().split(/[,\s]+/).filter(Boolean);
+  if(!nomes.length){erro.textContent="Digite o nome ou número de um Pokémon.";return;}
 
-            <button id="buscar">
-                Buscar
-            </button>
+  btn.disabled=true;btn.textContent="Buscando...";
+  var naoAchou=[],semConexao=false;
 
-        </div>
+  for(var i=0;i<nomes.length;i++){
+    try{
+      var r=await fetch("https://pokeapi.co/api/v2/pokemon/"+encodeURIComponent(nomes[i]));
+      if(!r.ok){naoAchou.push(nomes[i]);continue;}
+      mostrar(await r.json());
+    }catch(e){semConexao=true;}
+  }
 
-        <p id="mensagem"></p>
+  btn.disabled=false;btn.textContent="Buscar";
+  if(semConexao) erro.textContent="Não foi possível conectar à PokéAPI. Verifique a internet e abra o arquivo no navegador do computador.";
+  else if(naoAchou.length) erro.textContent="Não encontrado: "+naoAchou.join(", ");
+}
 
-        <section class="card">
+function mostrar(p){
+  var nome=p.name.charAt(0).toUpperCase()+p.name.slice(1);
+  var img=(p.sprites.other&&p.sprites.other["official-artwork"].front_default)||p.sprites.front_default;
+  var tipos=p.types.map(function(t){return '<span class="badge t-'+t.type.name+'">'+t.type.name+'</span>';}).join("");
+  var habs=p.abilities.map(function(a){return '<span class="badge hab">'+a.ability.name+'</span>';}).join("");
+  var barras=STATUS.map(function(s){
+    var v=p.stats.find(function(x){return x.stat.name===s.chave;}).base_stat;
+    return '<div class="lbl">'+s.nome+': '+v+'</div><div class="bar"><div style="width:'+Math.min(v,100)+'%;background:'+s.cor+'">'+v+'</div></div>';
+  }).join("");
 
-            <div class="cabecalho">
+  var card=document.createElement("div");
+  card.className="card";
+  card.innerHTML='<button class="x" title="Remover" onclick="this.parentNode.remove()">×</button>'+
+    '<div class="card-body res">'+
+    '<h3>'+nome+' <small>#'+p.id+'</small></h3>'+
+    '<img src="'+img+'" alt="'+nome+'"><hr>'+
+    '<h6>Tipo</h6><div>'+tipos+'</div>'+
+    '<div class="row" style="margin-top:12px"><div><strong>Altura</strong><br>'+(p.height/10)+' m</div><div><strong>Peso</strong><br>'+(p.weight/10)+' kg</div></div>'+
+    '<h6 style="margin-top:20px">Status</h6><div class="stats">'+barras+'</div>'+
+    '<h6 style="margin-top:16px">Habilidades</h6><div>'+habs+'</div>'+
+    '</div>';
+  document.getElementById("resultados").prepend(card);
+}
 
-                <h2 id="nome">
-                    Pikachu
-                </h2>
-
-                <span id="numero">
-                    #025
-                </span>
-
-            </div>
-
-            <div class="imagem-container">
-
-                <img
-                    id="imagem"
-                    src="pikachu.jpg";
-                    alt="Pikachu"
-                >
-
-            </div>
-
-            <!-- Tipo -->
-            <div class="informacoes">
-
-                <div class="linha">
-                    <strong>Tipo:</strong>
-
-                    <div id="tipos">
-                        <span class="tipo eletrico">
-                            Elétrico
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Altura -->
-                <div class="linha">
-                    <strong>Altura:</strong>
-                    <span id="altura">0.4 m</span>
-                </div>
-
-                <!-- Peso -->
-                <div class="linha">
-                    <strong>Peso:</strong>
-                    <span id="peso">6.0 kg</span>
-                </div>
-
-            </div>
-
-            <!-- Estatísticas -->
-            <div class="status">
-
-                <!-- HP -->
-                <div class="status-item">
-
-                    <div class="status-topo">
-                        <span>HP</span>
-                        <span id="hp-valor">35</span>
-                    </div>
-
-                    <div class="barra">
-                        <div
-                            id="hp-barra"
-                            class="barra-preenchida"
-                        ></div>
-                    </div>
-
-                </div>
-
-                <!-- Ataque -->
-                <div class="status-item">
-
-                    <div class="status-topo">
-                        <span>Ataque</span>
-                        <span id="ataque-valor">55</span>
-                    </div>
-
-                    <div class="barra">
-                        <div
-                            id="ataque-barra"
-                            class="barra-preenchida"
-                        ></div>
-                    </div>
-
-                </div>
-
-                <!-- Defesa -->
-                <div class="status-item">
-
-                    <div class="status-topo">
-                        <span>Defesa</span>
-                        <span id="defesa-valor">40</span>
-                    </div>
-
-                    <div class="barra">
-                        <div
-                            id="defesa-barra"
-                            class="barra-preenchida"
-                        ></div>
-                    </div>
-
-                </div>
-
-                <!-- Velocidade -->
-                <div class="status-item">
-
-                    <div class="status-topo">
-                        <span>Velocidade</span>
-                        <span id="velocidade-valor">90</span>
-                    </div>
-
-                    <div class="barra">
-                        <div
-                            id="velocidade-barra"
-                            class="barra-preenchida"
-                        ></div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-    <script src="script.js"></script>
-
+buscarPokemon();
+</script>
 </body>
-
 </html>
